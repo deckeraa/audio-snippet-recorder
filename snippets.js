@@ -3,9 +3,11 @@ function testScript(evt) {
     const clipContainer = parent.querySelector(".clip-container");
     const stopButton = parent.querySelector(".stop");
 
+    let recordedChunks = [];
+
     if(navigator.mediaDevices.getUserMedia) {
         let onSuccess = function(stream) {
-            const mediaRecorder = new MediaRecorder(stream); // todo pick MIME-type
+            const mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.start();
             console.log(mediaRecorder.state);
             console.log("Started recording");
@@ -16,10 +18,22 @@ function testScript(evt) {
                 console.log("recorder stopped");
             }
 
+            mediaRecorder.ondataavailable = function(e) {
+                recordedChunks.push(e.data);
+            }
+
             mediaRecorder.onstop = function(e) {
                 console.log("mediaRecorder.onStop");
-                const clipCard = document.createElement('h1');
-                clipCard.textContent = "Here's a clip";
+                const clipCard = document.createElement('div');
+                const audio = document.createElement('audio');
+                audio.setAttribute('controls', '');
+                audio.controls = true;
+                console.log(recordedChunks);
+                const blob = new Blob(recordedChunks, {'type' : 'audio/ogg; codecs=opus'});
+                console.log(blob);
+                audio.src = window.URL.createObjectURL(blob);
+                clipCard.append(audio);
+                
                 clipContainer.appendChild(clipCard);
             }
         }
