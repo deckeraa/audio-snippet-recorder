@@ -4,8 +4,16 @@
  */
 
 function snippets_shortcode($atts = [], $content = null, $tag = '') {
+   // normalize attribute keys, lowercase
+   $atts = array_change_key_case((array)$atts, CASE_LOWER);
+
+   // override default attributes with user attributes
+   $snippets_atts = shortcode_atts([
+                                        'text' => 'Text snippet goes here',
+                                 ], $atts, $tag);
+
    $o = '';
-   $o .= '<h2>Audio Snippet Recorder</h2>';
+   $o .= '<p>' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
    return $o;
 }
 
