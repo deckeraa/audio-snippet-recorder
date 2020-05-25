@@ -25,6 +25,8 @@ function testScript(evt) {
             mediaRecorder.onstop = function(e) {
                 console.log("mediaRecorder.onStop");
                 const clipCard = document.createElement('div');
+
+                // make the audio element
                 const audio = document.createElement('audio');
                 audio.setAttribute('controls', '');
                 audio.controls = true;
@@ -33,6 +35,14 @@ function testScript(evt) {
                 console.log(blob);
                 audio.src = window.URL.createObjectURL(blob);
                 clipCard.append(audio);
+
+                // make the delete button
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = "x";
+                deleteButton.onclick = function(evt) {
+                    evt.target.parentNode.parentNode.removeChild(evt.target.parentNode);
+                }
+                clipCard.append(deleteButton);
                 
                 clipContainer.appendChild(clipCard);
             }
