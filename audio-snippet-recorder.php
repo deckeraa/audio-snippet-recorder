@@ -13,8 +13,11 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
                                  ], $atts, $tag);
 
    $o = '';
+   $o .= '<div class=snippet>';
    $o .= '<p>' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
-   $o .= "<button onClick='alert(testScript);'>Record snippet</button>";
+   $o .= "<button onClick='testScript(event);'>Record snippet</button>";
+   $o .= '<div class="clip-container"></div>';
+   $o .= '</div>';
    return $o;
 }
 
