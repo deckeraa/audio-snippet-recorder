@@ -32,5 +32,9 @@ function snippets_enqueue( $hook ) {
    // if( 'audio-snippet-recorder.php' != $hook ) return;
    wp_enqueue_script('snippets-script',
                      plugins_url( '/snippets.js', __FILE__ ));
+   wp_localize_script('snippets-script','my_ajax_obj', array(
+      'ajax_url' => admin_url( 'admin-ajax.php' ),
+      'nonce'    => wp_create_nonce( 'clip_nonce' ),
+   ));
 }
 add_action('wp_enqueue_scripts', 'snippets_enqueue');

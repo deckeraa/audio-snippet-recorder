@@ -45,6 +45,26 @@ function testScript(evt) {
                 clipCard.append(deleteButton);
                 
                 clipContainer.appendChild(clipCard);
+
+                // send the audio clip to the server
+                var this2 = this;
+                var request = new XMLHttpRequest();
+                request.open('POST', my_ajax_obj.ajax_url, true);
+                request.onload = function() {
+                    if (this.status >= 200 && this.status < 400) {
+                        console.log("upload success",this);
+                        console.log("this.response", this.response);
+                    }
+                    else {
+                        console.log("Upload failed",this);
+                        console.log("this.response", this.response);
+                    }
+                }
+		request.send({
+		   _ajax_nonce: my_ajax_obj.clip_nonce,
+			action: "upload-snippet",
+	  		title: "foo"
+  		});
             }
         }
         let onError = function(err) {
