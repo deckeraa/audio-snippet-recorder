@@ -5,7 +5,7 @@
 
 function get_table_name () {
    global $wpdb;
-   $table_name = $wpdb->prefix . "snippets";
+   return $wpdb->prefix . "snippets";
 }
 
 function snippet_install () {
@@ -17,6 +17,7 @@ function snippet_install () {
    $sql = "CREATE TABLE $table_name (
       id mediumint(9) NOT NULL AUTO_INCREMENT,
       snippet varchar(255) DEFAULT '' NOT NULL,
+      audio_attachment_id bigint(20) NOT NULL,
       PRIMARY KEY  (id)
    ) $charset_collate;";
 
