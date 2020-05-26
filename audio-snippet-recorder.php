@@ -59,6 +59,7 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
    foreach( $snippets as $snippet ) {
       $o .= '<div>';
       $o .= '<audio controls="" src="' . wp_get_attachment_url($snippet->audio_attachment_id) . '"></audio></audio>';
+      $o .= '<button onclick="deleteSnippet(event,' . $snippet->id . ');">x</button>';
       $o .= '</div>';
    }
    $o .= '</div>';
@@ -118,3 +119,39 @@ function upload_snippet_handler() {
 }
 add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );
 add_action( 'wp_ajax_nopriv_upload_snippet', 'upload_snippet_handler' );
+
+function delete_snippet_handler() {
+   global $wpdb;
+   $snippet_id = $_POST['snippet_id'];
+   // TODO check nonce
+
+   // TODO verfiy that the user can delete the snippet
+
+   // TODO delete the attachment containing the recording
+   // TODO replace wp_snippets in all places with the dynamic table name
+   $snippet = $wpdb->get_row(
+      "
+      SELECT * FROM wp_snippets
+      where id=$snippet_id;
+      "
+   );
+
+   // Delete the snippet
+   $table_name = get_table_name();
+   $wpdb->delete(
+      $table_name,
+      array( 'id' => $snippet_id )
+   );
+
+   // Delete the underlying post
+   $wpdb->delete(
+      $wpdb->prefix . "posts",
+      array( 'id' => $snippet->audio_attachment_id )
+   );
+   
+   $return = array('Success' => 'true',
+                   'snippet_id' => $snippet->id,
+                   'audio_attachment_id' => $snippet->audio_attachment_id);
+   wp_send_json($return);
+}
+add_action( 'wp_ajax_delete_snippet', 'delete_snippet_handler' );

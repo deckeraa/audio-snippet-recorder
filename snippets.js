@@ -112,3 +112,27 @@ function testScript(evt) {
     }
 }
 
+function deleteSnippet(evt,snippet_id) {
+    const root = evt.target.parentElement.parentElement.parentElement;
+    const snippet = root.querySelector(".snippet-text").textContent;
+    
+    var formData = new FormData();
+    formData.append('action',"delete_snippet");
+    formData.append("_ajax_nonce", my_ajax_obj.nonce);
+    formData.append("post_id",my_ajax_obj.post_id);
+    formData.append("snippet",snippet);
+    formData.append("snippet_id",snippet_id);
+
+    jQuery.ajax({
+        url: my_ajax_obj.ajax_url,
+        type: "POST",
+        data : formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            console.log("callback",data);
+            evt.target.parentElement.parentElement.removeChild(evt.target.parentElement);
+        }
+    });
+    
+}
