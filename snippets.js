@@ -47,14 +47,16 @@ function testScript(evt) {
                 clipContainer.appendChild(clipCard);
 
                 // send the audio clip to the server
-                var this2 = this;
+                var this2 = this; // TODO remove
+                const snippet = parent.querySelector(".snippet-text").textContent;
+                const filename = snippet+".ogg";
                 var formData = new FormData();
                 formData.append('action',"upload_snippet");
                 formData.append("_ajax_nonce", my_ajax_obj.nonce);
-                formData.append("title","foo");
+                formData.append("title","foo"); // TODO remove
                 formData.append("post_id",my_ajax_obj.post_id);
-                // TODO think long and hard about whether this cretes a vuln
-                const filename = parent.querySelector(".snippet-text").textContent+".ogg";
+                formData.append("snippet",snippet);
+                
                 formData.append("snippet_blob",blob,filename);
                 jQuery.ajax({
                     url: my_ajax_obj.ajax_url,

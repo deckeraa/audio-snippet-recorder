@@ -14,6 +14,7 @@ function snippet_install () {
    $table_name = get_table_name();
    $charset_collate = $wpdb->get_charset_collate();
 
+   // audio_attachment_id is not a foreign key because dbDelta doesn't support that
    $sql = "CREATE TABLE $table_name (
       id mediumint(9) NOT NULL AUTO_INCREMENT,
       snippet varchar(255) DEFAULT '' NOT NULL,
@@ -69,6 +70,7 @@ add_action('wp_enqueue_scripts', 'snippets_enqueue');
 function upload_snippet_handler() {
    // TODO check nonce
 
+   // save the audio as a post attachment
    require_once( ABSPATH . 'wp-admin/includes/image.php' );
    require_once( ABSPATH . 'wp-admin/includes/file.php' );
    require_once( ABSPATH . 'wp-admin/includes/media.php' );
@@ -77,6 +79,17 @@ function upload_snippet_handler() {
 
    $attachment_id = media_handle_upload( 'snippet_blob', $_POST['post_id'], $_POST['snippet_blob']);
    $attachment = wp_prepare_attachment_for_js( $attachment_id );
+
+   // add a line to the wp_snippets table so that we can find these later when the snippet shortcode is used
+   global $wpdb;
+   $table_name = get_table_name();
+   $wpdb->insert(
+      $table_name,
+      array(
+         snippet => $_POST['snippet'],
+         audio_attachment_id => $attachment_id,
+      )
+   );
 
    $return = array('Success' => 'true',
                    'Title' => $_POST['title'],
