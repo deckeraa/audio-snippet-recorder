@@ -12,9 +12,11 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
                                         'text' => 'Text snippet goes here',
                                  ], $atts, $tag);
 
+
+
    $o = '';
    $o .= '<div class=snippet>';
-   $o .= '<p>' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
+   $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
    $o .= "<button onClick='testScript(event);'>Record snippet</button>";
    $o .= '<button class="stop">Stop</button>';
    $o .= '<div class="clip-container"></div>';

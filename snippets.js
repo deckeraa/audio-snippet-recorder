@@ -52,7 +52,9 @@ function testScript(evt) {
                 formData.append('action',"upload_snippet");
                 formData.append("_ajax_nonce", my_ajax_obj.nonce);
                 formData.append("title","foo");
-                formData.append("snippet_blob",blob);
+                // TODO think long and hard about whether this cretes a vuln
+                const filename = parent.querySelector(".snippet-text").textContent+".ogg";
+                formData.append("snippet_blob",blob,filename);
                 jQuery.ajax({
                     url: my_ajax_obj.ajax_url,
                     type: "POST",
