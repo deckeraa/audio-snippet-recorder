@@ -38,6 +38,7 @@ function snippets_enqueue( $hook ) {
    wp_localize_script('snippets-script','my_ajax_obj', array(
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'nonce'    => wp_create_nonce( 'clip_nonce' ),
+      'post_id'  => get_the_ID()
    ));
 }
 add_action('wp_enqueue_scripts', 'snippets_enqueue');
@@ -51,13 +52,14 @@ function upload_snippet_handler() {
 
    define( 'ALLOW_UNFILTERED_UPLOADS', true ); // TODO remove before shipping
 
-   $attachment_id = media_handle_upload( 'snippet_blob', $_REQUEST['post_id'], $_REQUEST['snippet_blob']);
+   $attachment_id = media_handle_upload( 'snippet_blob', $_POST['post_id'], $_POST['snippet_blob']);
    $attachment = wp_prepare_attachment_for_js( $attachment_id );
 
    $return = array('Success' => 'true',
                    'Title' => $_POST['title'],
                    'attachment_id' => $attachment_id,
-                   'attachment' => $attachment);
+                   'attachment' => $attachment,
+                   'post' => $_POST['post_id']);
    wp_send_json($return);
 }
 add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );

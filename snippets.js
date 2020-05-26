@@ -52,6 +52,7 @@ function testScript(evt) {
                 formData.append('action',"upload_snippet");
                 formData.append("_ajax_nonce", my_ajax_obj.nonce);
                 formData.append("title","foo");
+                formData.append("post_id",my_ajax_obj.post_id);
                 // TODO think long and hard about whether this cretes a vuln
                 const filename = parent.querySelector(".snippet-text").textContent+".ogg";
                 formData.append("snippet_blob",blob,filename);
