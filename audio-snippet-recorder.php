@@ -109,12 +109,20 @@ function upload_snippet_handler() {
          audio_attachment_id => $attachment_id,
       )
    );
+   // grab the ID of the row just inserted
+   $snippet = $wpdb->get_row(
+      "
+      SELECT * FROM wp_snippets
+      where audio_attachment_id=$attachment_id;
+      "
+   );
 
    $return = array('Success' => 'true',
                    'Title' => $_POST['title'],
                    'attachment_id' => $attachment_id,
                    'attachment' => $attachment,
-                   'post' => $_POST['post_id']);
+                   'post' => $_POST['post_id'],
+                   'snippet_id' => $snippet->id);
    wp_send_json($return);
 }
 add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );

@@ -1,3 +1,28 @@
+function deleteSnippet(evt,snippet_id) {
+    const root = evt.target.parentElement.parentElement.parentElement;
+    const snippet = root.querySelector(".snippet-text").textContent;
+    
+    var formData = new FormData();
+    formData.append('action',"delete_snippet");
+    formData.append("_ajax_nonce", my_ajax_obj.nonce);
+    formData.append("post_id",my_ajax_obj.post_id);
+    formData.append("snippet",snippet);
+    formData.append("snippet_id",snippet_id);
+
+    jQuery.ajax({
+        url: my_ajax_obj.ajax_url,
+        type: "POST",
+        data : formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            console.log("callback",data);
+            evt.target.parentElement.parentElement.removeChild(evt.target.parentElement);
+        }
+    });
+    
+}
+
 function testScript(evt) {
     const parent = evt.target.parentElement;
     const clipContainer = parent.querySelector(".clip-container");
@@ -36,13 +61,7 @@ function testScript(evt) {
                 audio.src = window.URL.createObjectURL(blob);
                 clipCard.append(audio);
 
-                // make the delete button
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = "x";
-                deleteButton.onclick = function(evt) {
-                    evt.target.parentNode.parentNode.removeChild(evt.target.parentNode);
-                }
-                clipCard.append(deleteButton);
+                
                 
                 clipContainer.appendChild(clipCard);
 
@@ -66,41 +85,13 @@ function testScript(evt) {
                     contentType: false,
                     success: function(data) {
                         console.log("callback",data);
+                        // make the delete button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = "x";
+                        deleteButton.onclick = function(event) { deleteSnippet(event,data.snippet_id)};
+                        clipCard.append(deleteButton);
                     }
                 });
-                            // {
-		//    _ajax_nonce: my_ajax_obj.nonce,
-		// 	action: "upload_snippet",
-	  	//     title: "foo",
-                //     snippet_blob: blob
-  		// }
-                //             , function(data) {	
-                //     console.log("callback",data)
-		// });
-                // TODO switch over to XMLHttpRequest and eliminate jQuery dependency.
-                // The reason the below code doesn't work is that admin-ajax doesn't support
-                // a Content-Type of application/json; instead everything needs url-encoded.
-                // var request = new XMLHttpRequest();
-                // request.open('POST', my_ajax_obj.ajax_url, true);
-                // request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;');
-                // //request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-                // request.withCredentials = true;
-                // request.onload = function() {
-                //     if (this.status >= 200 && this.status < 400) {
-                //         console.log("upload success",this);
-                //         console.log("this.response", this.response);
-                //     }
-                //     else {
-                //         console.log("Upload failed",this);
-                //         console.log("this.response", this.response);
-                //     }
-                // }
-                // var data = {
-		//    _ajax_nonce: my_ajax_obj.nonce,
-		// 	action: "upload_snippet"
-  		// };
-                // console.log("sending ",data);
-		// request.send(JSON.stringify(data));
             }
         }
         let onError = function(err) {
@@ -110,29 +101,4 @@ function testScript(evt) {
     } else {
         console.log("getUserMedia is not supported by your browser and snippets cannot be recorded");
     }
-}
-
-function deleteSnippet(evt,snippet_id) {
-    const root = evt.target.parentElement.parentElement.parentElement;
-    const snippet = root.querySelector(".snippet-text").textContent;
-    
-    var formData = new FormData();
-    formData.append('action',"delete_snippet");
-    formData.append("_ajax_nonce", my_ajax_obj.nonce);
-    formData.append("post_id",my_ajax_obj.post_id);
-    formData.append("snippet",snippet);
-    formData.append("snippet_id",snippet_id);
-
-    jQuery.ajax({
-        url: my_ajax_obj.ajax_url,
-        type: "POST",
-        data : formData,
-        processData: false,
-        contentType: false,
-        success: function(data) {
-            console.log("callback",data);
-            evt.target.parentElement.parentElement.removeChild(evt.target.parentElement);
-        }
-    });
-    
 }
