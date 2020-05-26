@@ -48,23 +48,54 @@ function testScript(evt) {
 
                 // send the audio clip to the server
                 var this2 = this;
-                var request = new XMLHttpRequest();
-                request.open('POST', my_ajax_obj.ajax_url, true);
-                request.onload = function() {
-                    if (this.status >= 200 && this.status < 400) {
-                        console.log("upload success",this);
-                        console.log("this.response", this.response);
+                var formData = new FormData();
+                formData.append('action',"upload_snippet");
+                formData.append("_ajax_nonce", my_ajax_obj.nonce);
+                formData.append("title","foo");
+                formData.append("snippet_blob",blob);
+                jQuery.ajax({
+                    url: my_ajax_obj.ajax_url,
+                    type: "POST",
+                    data : formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        console.log("callback",data);
                     }
-                    else {
-                        console.log("Upload failed",this);
-                        console.log("this.response", this.response);
-                    }
-                }
-		request.send({
-		   _ajax_nonce: my_ajax_obj.clip_nonce,
-			action: "upload-snippet",
-	  		title: "foo"
-  		});
+                });
+                            // {
+		//    _ajax_nonce: my_ajax_obj.nonce,
+		// 	action: "upload_snippet",
+	  	//     title: "foo",
+                //     snippet_blob: blob
+  		// }
+                //             , function(data) {	
+                //     console.log("callback",data)
+		// });
+                // TODO switch over to XMLHttpRequest and eliminate jQuery dependency.
+                // The reason the below code doesn't work is that admin-ajax doesn't support
+                // a Content-Type of application/json; instead everything needs url-encoded.
+                // var request = new XMLHttpRequest();
+                // request.open('POST', my_ajax_obj.ajax_url, true);
+                // request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;');
+                // //request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                // request.withCredentials = true;
+                // request.onload = function() {
+                //     if (this.status >= 200 && this.status < 400) {
+                //         console.log("upload success",this);
+                //         console.log("this.response", this.response);
+                //     }
+                //     else {
+                //         console.log("Upload failed",this);
+                //         console.log("this.response", this.response);
+                //     }
+                // }
+                // var data = {
+		//    _ajax_nonce: my_ajax_obj.nonce,
+		// 	action: "upload_snippet"
+  		// };
+                // console.log("sending ",data);
+		// request.send(JSON.stringify(data));
             }
         }
         let onError = function(err) {

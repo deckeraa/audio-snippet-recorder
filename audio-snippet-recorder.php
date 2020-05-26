@@ -31,10 +31,33 @@ add_action('init', 'snippets_shortcodes_init');
 function snippets_enqueue( $hook ) {
    // if( 'audio-snippet-recorder.php' != $hook ) return;
    wp_enqueue_script('snippets-script',
-                     plugins_url( '/snippets.js', __FILE__ ));
+                     plugins_url( '/snippets.js', __FILE__ )
+                     , array('jquery'));
    wp_localize_script('snippets-script','my_ajax_obj', array(
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'nonce'    => wp_create_nonce( 'clip_nonce' ),
    ));
 }
 add_action('wp_enqueue_scripts', 'snippets_enqueue');
+
+function upload_snippet_handler() {
+   // TODO check nonce
+
+   require_once( ABSPATH . 'wp-admin/includes/image.php' );
+   require_once( ABSPATH . 'wp-admin/includes/file.php' );
+   require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+   define( 'ALLOW_UNFILTERED_UPLOADS', true ); // TODO remove before shipping
+
+   $attachment_id = media_handle_upload( 'snippet_blob', $_REQUEST['post_id'], $_REQUEST['snippet_blob']);
+   $attachment = wp_prepare_attachment_for_js( $attachment_id );
+
+   $return = array('Success' => 'true',
+                   'Title' => $_POST['title'],
+                   'attachment_id' => $attachment_id,
+                   'attachment' => $attachment);
+   wp_send_json($return);
+}
+add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );
+add_action( 'wp_ajax_nopriv_upload_snippet', 'upload_snippet_handler' );
+
