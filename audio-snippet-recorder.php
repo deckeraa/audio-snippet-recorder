@@ -37,13 +37,27 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
                                  ], $atts, $tag);
 
 
+   $text = $snippets_atts['text'];
+   global $wpdb;
+   $snippets = $wpdb->get_results(
+      "
+      SELECT * FROM wp_snippets
+      where snippet='$text';
+      "
+   );
 
    $o = '';
    $o .= '<div class=snippet>';
    $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
    $o .= "<button onClick='testScript(event);'>Record snippet</button>";
    $o .= '<button class="stop">Stop</button>';
-   $o .= '<div class="clip-container"></div>';
+   $o .= '<div class="clip-container">';
+   foreach( $snippets as $snippet ) {
+      $o .= '<div>';
+      $o .= $snippet->snippet;
+      $o .= '</div>';
+   }
+   $o .= '</div>';
    $o .= '</div>';
    return $o;
 }
