@@ -3,6 +3,28 @@
  * Plugin Name: Audio Snippet Recorder
  */
 
+function get_table_name () {
+   global $wpdb;
+   $table_name = $wpdb->prefix . "snippets";
+}
+
+function snippet_install () {
+   global $wpdb;
+
+   $table_name = get_table_name();
+   $charset_collate = $wpdb->get_charset_collate();
+
+   $sql = "CREATE TABLE $table_name (
+      id mediumint(9) NOT NULL AUTO_INCREMENT,
+      snippet varchar(255) DEFAULT '' NOT NULL,
+      PRIMARY KEY  (id)
+   ) $charset_collate;";
+
+   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+   dbDelta($sql);
+}
+register_activation_hook(__FILE__, 'snippet_install');
+
 function snippets_shortcode($atts = [], $content = null, $tag = '') {
    // normalize attribute keys, lowercase
    $atts = array_change_key_case((array)$atts, CASE_LOWER);
@@ -64,4 +86,3 @@ function upload_snippet_handler() {
 }
 add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );
 add_action( 'wp_ajax_nopriv_upload_snippet', 'upload_snippet_handler' );
-
