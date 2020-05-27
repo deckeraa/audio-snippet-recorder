@@ -11,7 +11,7 @@
 
 function get_table_name () {
     global $wpdb;
-    return $wpdb->prefix . "snippets";
+    return $wpdb->prefix . "snippets"; // typically returns wp_snippets
 }
 
 function snippet_install () {
@@ -21,6 +21,7 @@ function snippet_install () {
     $charset_collate = $wpdb->get_charset_collate();
 
     // audio_attachment_id is not a foreign key because dbDelta doesn't support that
+    // same with user_id
     $sql = "CREATE TABLE $table_name (
       id mediumint(9) NOT NULL AUTO_INCREMENT,
       snippet varchar(255) DEFAULT '' NOT NULL,
@@ -33,7 +34,8 @@ function snippet_install () {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
 
-    // configure plugin-specific Capabilities
+    // Configure plugin-specific Capabilities
+    // Contributors and above can record snippets
     global $wp_roles;
     $wp_roles->add_cap( "administrator", "record_snippets" );
     $wp_roles->add_cap( "editor", "record_snippets" );
@@ -52,7 +54,7 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
         'text' => 'Text snippet goes here',
     ], $atts, $tag);
 
-
+    // look up existing snippet recordings
     $text = $snippets_atts['text'];
     global $wpdb;
     $table_name = get_table_name();
@@ -63,6 +65,7 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
         "
     );
 
+    // render the snippet with the existing snippet recordings
     $o = '';
     $o .= '<div class="snippet flex flex-column ma2">';
     $o .= '<div class="flex items-center">';
@@ -101,7 +104,6 @@ function snippets_shortcodes_init() {
 add_action('init', 'snippets_shortcodes_init');
 
 function snippets_enqueue( $hook ) {
-    // if( 'audio-snippet-recorder.php' != $hook ) return;
     wp_enqueue_script('snippets-script',
                       plugins_url( '/snippets.js', __FILE__ )
                     , array('jquery'));
@@ -110,6 +112,7 @@ function snippets_enqueue( $hook ) {
         'nonce'    => wp_create_nonce( 'clip_nonce' ),
         'post_id'  => get_the_ID()
     ));
+    // we use Tachyons for styling. https://tachyons.io/
     wp_enqueue_style('snippets-style', plugins_url('/tachyons.min.css', __FILE__ ));
 }
 add_action('wp_enqueue_scripts', 'snippets_enqueue');
@@ -119,7 +122,7 @@ function upload_snippet_handler() {
 
     if ( !current_user_can("record_snippets") ) {
         wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You need the contributor role or above.'));
-        wp_die();
+        wp_die(); // this is a bit redundant since wp_send_json calls wp_die(), but putting it in just in case wp_send_json changes to stop doing that
     }
 
     // save the audio as a post attachment
@@ -129,14 +132,14 @@ function upload_snippet_handler() {
 
     define( 'ALLOW_UNFILTERED_UPLOADS', true ); // TODO remove before shipping
 
-    $user = wp_get_current_user();
-    
+    // upload the audio to an attachment attached to the post that the shortcode is on
     $attachment_id = media_handle_upload( 'snippet_blob', $_POST['post_id'], $_POST['snippet_blob']);
     $attachment = wp_prepare_attachment_for_js( $attachment_id );
 
     // add a line to the wp_snippets table so that we can find these later when the snippet shortcode is used
     global $wpdb;
     $table_name = get_table_name();
+    $user = wp_get_current_user();
     $wpdb->insert(
         $table_name,
         array(
@@ -146,7 +149,8 @@ function upload_snippet_handler() {
             user_display_name => $user->display_name,
         )
     );
-    // grab the ID of the row just inserted
+    // Grab the ID of the row just inserted. This needs to be
+    // passed back to the client so that it can render a working delete button.
     $snippet = $wpdb->get_row(
         "
       SELECT * FROM $table_name
@@ -170,6 +174,7 @@ function delete_snippet_handler() {
     global $wpdb;
     $snippet_id = $_POST['snippet_id'];
 
+    // look up the snippet since we need to know the user_id and the attachment containing the media
     $table_name = get_table_name();
     $snippet = $wpdb->get_row(
         "
