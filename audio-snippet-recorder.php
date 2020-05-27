@@ -57,10 +57,6 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
       "
    );
 
-   define( 'WP_DEBUG', true );
-   define( 'WP_DEBUG_LOG', true );
-   define( 'WP_DEBUG_DISPLAY', true );
-
    $o = '';
    $o .= '<div class=snippet>';
    $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
@@ -72,7 +68,10 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
    foreach( $snippets as $snippet ) {
       $o .= '<div>';
       $o .= '<audio controls="" src="' . wp_get_attachment_url($snippet->audio_attachment_id) . '"></audio></audio>';
-      $o .= '<button onclick="deleteSnippet(event,' . $snippet->id . ');">x</button>';
+      $user = wp_get_current_user();
+      if ( current_user_can("delete_others_snippets") || $user->id == $snippet->user_id ) {
+         $o .= '<button onclick="deleteSnippet(event,' . $snippet->id . ');">x</button>';
+      }
       $o .= '</div>';
    }
    $o .= '</div>';
