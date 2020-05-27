@@ -87,7 +87,7 @@ function snippets_enqueue( $hook ) {
 add_action('wp_enqueue_scripts', 'snippets_enqueue');
 
 function upload_snippet_handler() {
-   // TODO check nonce
+   check_ajax_referer('clip_nonce');
 
    // save the audio as a post attachment
    require_once( ABSPATH . 'wp-admin/includes/image.php' );
@@ -129,9 +129,9 @@ add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );
 add_action( 'wp_ajax_nopriv_upload_snippet', 'upload_snippet_handler' );
 
 function delete_snippet_handler() {
+   check_ajax_referer('clip_nonce');
    global $wpdb;
    $snippet_id = $_POST['snippet_id'];
-   // TODO check nonce
 
    // TODO verfiy that the user can delete the snippet
 
