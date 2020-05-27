@@ -1,6 +1,12 @@
 <?php
 /**
- * Plugin Name: Audio Snippet Recorder
+ * Plugin Name: Snippets: the Audio Snippet Recorder
+ * Plugin URI: https://github.com/deckeraa/audio-snippet-recorder
+ * Description: Let contributers record audio snippets.
+ * Author: Aaron Decker
+ * Author URI: https://stronganchortech.com/
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
 function get_table_name () {
