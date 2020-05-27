@@ -58,19 +58,21 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
     );
 
     $o = '';
-    $o .= '<div class=snippet>';
+    $o .= '<div class="snippet flex flex-column ma2">';
+    $o .= '<div class="flex">';
     $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
     if ( current_user_can("record_snippets") ) {
-        $o .= "<button class='white bg-green bn pa2 ma1' onClick='testScript(event);'>Record snippet</button>";
-        $o .= '<button class="stop">Stop</button>';
+        $o .= "<button class='start white bg-green bn pa2 ma1 f3 br3 dim' onClick='testScript(event);'>Record snippet</button>";
+        $o .= '<button class="stop white bg-red bn pa2 ma1 f3 br3 dim dn">Stop Recording</button>';
     }
+    $o .= '</div>';
     $o .= '<div class="clip-container">';
     foreach( $snippets as $snippet ) {
-        $o .= '<div>';
+        $o .= '<div class="flex">';
         $o .= '<audio controls="" src="' . wp_get_attachment_url($snippet->audio_attachment_id) . '"></audio></audio>';
         $user = wp_get_current_user();
         if ( current_user_can("delete_others_snippets") || $user->id == $snippet->user_id ) {
-            $o .= '<button onclick="deleteSnippet(event,' . $snippet->id . ');">x</button>';
+            $o .= '<button class="red b bg-white f3 ba br3 ma1 dim" onclick="deleteSnippet(event,' . $snippet->id . ');">x</button>';
         }
         $o .= '</div>';
     }
@@ -140,11 +142,11 @@ function upload_snippet_handler() {
     );
 
     $return = array('Success' => 'true',
-    'Title' => $_POST['title'],
-    'attachment_id' => $attachment_id,
-    'attachment' => $attachment,
-    'post' => $_POST['post_id'],
-    'snippet_id' => $snippet->id);
+                    'Title' => $_POST['title'],
+                    'attachment_id' => $attachment_id,
+                    'attachment' => $attachment,
+                    'post' => $_POST['post_id'],
+                    'snippet_id' => $snippet->id);
     wp_send_json($return);
 }
 add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );
@@ -179,8 +181,8 @@ function delete_snippet_handler() {
         );
         
         $return = array('Success' => 'true',
-        'snippet_id' => $snippet->id,
-        'audio_attachment_id' => $snippet->audio_attachment_id);
+                        'snippet_id' => $snippet->id,
+                        'audio_attachment_id' => $snippet->audio_attachment_id);
         wp_send_json($return);
     }
     else {

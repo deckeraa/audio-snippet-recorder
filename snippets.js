@@ -28,8 +28,9 @@ function deleteSnippet(evt,snippet_id) {
 }
 
 function testScript(evt) {
-    const parent = evt.target.parentElement;
+    const parent = evt.target.parentElement.parentElement;
     const clipContainer = parent.querySelector(".clip-container");
+    const startButton = parent.querySelector(".start");
     const stopButton = parent.querySelector(".stop");
 
     let recordedChunks = [];
@@ -47,6 +48,9 @@ function testScript(evt) {
                 console.log("recorder stopped");
             }
 
+            startButton.setAttribute('style', 'display: none;');
+            stopButton.setAttribute('style', 'display: block;');
+
             mediaRecorder.ondataavailable = function(e) {
                 recordedChunks.push(e.data);
             }
@@ -54,6 +58,10 @@ function testScript(evt) {
             mediaRecorder.onstop = function(e) {
                 console.log("mediaRecorder.onStop");
                 const clipCard = document.createElement('div');
+                clipCard.className="flex";
+
+                startButton.setAttribute('style', 'display: block;');
+                stopButton.setAttribute('style', 'display: none;');
 
                 // make the audio element
                 const audio = document.createElement('audio');
@@ -64,13 +72,10 @@ function testScript(evt) {
                 console.log(blob);
                 audio.src = window.URL.createObjectURL(blob);
                 clipCard.append(audio);
-
-                
                 
                 clipContainer.appendChild(clipCard);
 
                 // send the audio clip to the server
-                var this2 = this; // TODO remove
                 const snippet = parent.querySelector(".snippet-text").textContent;
                 const filename = snippet+".ogg";
                 var formData = new FormData();
@@ -92,6 +97,7 @@ function testScript(evt) {
                         // make the delete button
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = "x";
+                        deleteButton.className = "red b bg-white f3 ba br3 ma1 dim";
                         deleteButton.onclick = function(event) { deleteSnippet(event,data.snippet_id)};
                         clipCard.append(deleteButton);
                     }
