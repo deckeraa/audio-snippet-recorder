@@ -19,6 +19,8 @@ function snippet_install () {
       id mediumint(9) NOT NULL AUTO_INCREMENT,
       snippet varchar(255) DEFAULT '' NOT NULL,
       audio_attachment_id bigint(20) NOT NULL,
+      user_id bigint(20) NOT NULL,
+      user_display_name varchar(250) NOT NULL,
       PRIMARY KEY  (id)
    ) $charset_collate;";
 
@@ -124,6 +126,8 @@ function upload_snippet_handler() {
       array(
          snippet => $_POST['snippet'],
          audio_attachment_id => $attachment_id,
+         user_id => $user->id,
+         user_display_name => $user->display_name,
       )
    );
    // grab the ID of the row just inserted
