@@ -61,8 +61,10 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
    $o = '';
    $o .= '<div class=snippet>';
    $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
-   $o .= "<button onClick='testScript(event);'>Record snippet</button>";
-   $o .= '<button class="stop">Stop</button>';
+   if ( current_user_can("record_snippets") ) {
+      $o .= "<button onClick='testScript(event);'>Record snippet</button>";
+      $o .= '<button class="stop">Stop</button>';
+   }
    $o .= '<div class="clip-container">';
    foreach( $snippets as $snippet ) {
       $o .= '<div>';
