@@ -61,7 +61,7 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
     $o .= '<div class=snippet>';
     $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
     if ( current_user_can("record_snippets") ) {
-        $o .= "<button onClick='testScript(event);'>Record snippet</button>";
+        $o .= "<button class='white bg-green bn pa2 ma1' onClick='testScript(event);'>Record snippet</button>";
         $o .= '<button class="stop">Stop</button>';
     }
     $o .= '<div class="clip-container">';
@@ -95,6 +95,7 @@ function snippets_enqueue( $hook ) {
         'nonce'    => wp_create_nonce( 'clip_nonce' ),
         'post_id'  => get_the_ID()
     ));
+    wp_enqueue_style('snippets-style', plugins_url('/tachyons.min.css', __FILE__ ));
 }
 add_action('wp_enqueue_scripts', 'snippets_enqueue');
 
@@ -139,11 +140,11 @@ function upload_snippet_handler() {
     );
 
     $return = array('Success' => 'true',
-                    'Title' => $_POST['title'],
-                    'attachment_id' => $attachment_id,
-                    'attachment' => $attachment,
-                    'post' => $_POST['post_id'],
-                    'snippet_id' => $snippet->id);
+    'Title' => $_POST['title'],
+    'attachment_id' => $attachment_id,
+    'attachment' => $attachment,
+    'post' => $_POST['post_id'],
+    'snippet_id' => $snippet->id);
     wp_send_json($return);
 }
 add_action( 'wp_ajax_upload_snippet', 'upload_snippet_handler' );
@@ -178,8 +179,8 @@ function delete_snippet_handler() {
         );
         
         $return = array('Success' => 'true',
-                        'snippet_id' => $snippet->id,
-                        'audio_attachment_id' => $snippet->audio_attachment_id);
+        'snippet_id' => $snippet->id,
+        'audio_attachment_id' => $snippet->audio_attachment_id);
         wp_send_json($return);
     }
     else {
