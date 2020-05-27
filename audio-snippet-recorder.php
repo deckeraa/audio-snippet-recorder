@@ -154,7 +154,7 @@ function delete_snippet_handler() {
    global $wpdb;
    $snippet_id = $_POST['snippet_id'];
 
-   // TODO verfiy that the user can delete the snippet
+
 
    // TODO delete the attachment containing the recording
    // TODO replace wp_snippets in all places with the dynamic table name
@@ -165,23 +165,29 @@ function delete_snippet_handler() {
       "
    );
 
-   // Delete the snippet
-   $table_name = get_table_name();
-   $wpdb->delete(
-      $table_name,
-      array( 'id' => $snippet_id )
-   );
+   $user = wp_get_current_user();
+   if ( current_user_can("delete_others_snippets") || $user->id == $snippet->user_id ) {
+      // Delete the snippet
+      $table_name = get_table_name();
+      $wpdb->delete(
+         $table_name,
+         array( 'id' => $snippet_id )
+      );
 
-   // Delete the underlying post
-   $wpdb->delete(
-      $wpdb->prefix . "posts",
-      array( 'id' => $snippet->audio_attachment_id )
-   );
+      // Delete the underlying post
+      $wpdb->delete(
+         $wpdb->prefix . "posts",
+         array( 'id' => $snippet->audio_attachment_id )
+      );
    
-   $return = array('Success' => 'true',
-                   'snippet_id' => $snippet->id,
-                   'audio_attachment_id' => $snippet->audio_attachment_id);
-   wp_send_json($return);
+      $return = array('Success' => 'true',
+                      'snippet_id' => $snippet->id,
+                      'audio_attachment_id' => $snippet->audio_attachment_id);
+      wp_send_json($return);
+   }
+   else {
+      wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You can only delete your own snippets unless you are admin.'));
+   }
 }
 add_action( 'wp_ajax_delete_snippet', 'delete_snippet_handler' );
 add_action( 'wp_ajax_nopriv_delete_snippet', 'delete_snippet_handler' );

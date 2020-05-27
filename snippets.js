@@ -16,8 +16,12 @@ function deleteSnippet(evt,snippet_id) {
         processData: false,
         contentType: false,
         success: function(data) {
-            console.log("callback",data);
-            evt.target.parentElement.parentElement.removeChild(evt.target.parentElement);
+            if (data.Success == "true") {
+                evt.target.parentElement.parentElement.removeChild(evt.target.parentElement);
+            }
+            else {
+                console.log("Couldn't delete snippet: ",data);
+            }
         }
     });
     
