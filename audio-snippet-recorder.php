@@ -59,8 +59,15 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
 
     $o = '';
     $o .= '<div class="snippet flex flex-column ma2">';
-    $o .= '<div class="flex">';
-    $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
+    $o .= '<div class="flex items-center">';
+    if ($content != null) {
+        $o .= do_shortcode($content);
+        $o .= '<p class="snippet-text dn">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
+    }
+    else {
+        $o .= '<p class="snippet-text">' . esc_html__($snippets_atts['text'], 'snippets') . '</p>';
+    }
+
     if ( current_user_can("record_snippets") ) {
         $o .= "<button class='start white bg-green bn pa2 ma1 f3 br3 dim' onClick='testScript(event);'>Record snippet</button>";
         $o .= '<button class="stop white bg-red bn pa2 ma1 f3 br3 dim dn">Stop Recording</button>';
