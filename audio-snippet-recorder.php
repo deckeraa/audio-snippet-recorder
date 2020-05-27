@@ -97,9 +97,8 @@ add_action('wp_enqueue_scripts', 'snippets_enqueue');
 function upload_snippet_handler() {
    check_ajax_referer('clip_nonce');
 
-
    if ( !current_user_can("record_snippets") ) {
-      wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You need the contributor role or above.', 'roles' => $user->roles));
+      wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You need the contributor role or above.'));
       wp_die();
    }
 
