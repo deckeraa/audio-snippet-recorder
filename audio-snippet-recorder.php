@@ -24,6 +24,14 @@ function snippet_install () {
 
    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
    dbDelta($sql);
+
+   // configure plugin-specific Capabilities
+   global $wp_roles;
+   $wp_roles->add_cap( "administrator", "record_snippets" );
+   $wp_roles->add_cap( "editor", "record_snippets" );
+   $wp_roles->add_cap( "author", "record_snippets" );
+   $wp_roles->add_cap( "contributor", "record_snippets" );
+   $wp_roles->add_cap( "administrator", "delete_others_snippets" ); 
 }
 register_activation_hook(__FILE__, 'snippet_install');
 
@@ -89,6 +97,12 @@ add_action('wp_enqueue_scripts', 'snippets_enqueue');
 function upload_snippet_handler() {
    check_ajax_referer('clip_nonce');
 
+
+   if ( !current_user_can("record_snippets") ) {
+      wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You need the contributor role or above.', 'roles' => $user->roles));
+      wp_die();
+   }
+
    // save the audio as a post attachment
    require_once( ABSPATH . 'wp-admin/includes/image.php' );
    require_once( ABSPATH . 'wp-admin/includes/file.php' );
@@ -96,6 +110,8 @@ function upload_snippet_handler() {
 
    define( 'ALLOW_UNFILTERED_UPLOADS', true ); // TODO remove before shipping
 
+   $user = wp_get_current_user();
+   
    $attachment_id = media_handle_upload( 'snippet_blob', $_POST['post_id'], $_POST['snippet_blob']);
    $attachment = wp_prepare_attachment_for_js( $attachment_id );
 
