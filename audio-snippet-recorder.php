@@ -69,7 +69,7 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
     }
 
     if ( current_user_can("record_snippets") ) {
-        $o .= "<button class='start white bg-green bn pa2 ma1 f3 br3 dim' onClick='testScript(event);'>Record snippet</button>";
+        $o .= "<button class='start white bg-green bn pa2 ma1 f3 br3 dim' onClick='recordSnippet(event);'>Record snippet</button>";
         $o .= '<button class="stop white bg-red bn pa2 ma1 f3 br3 dim dn">Stop Recording</button>';
     }
     $o .= '</div>';

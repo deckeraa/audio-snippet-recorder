@@ -27,7 +27,7 @@ function deleteSnippet(evt,snippet_id) {
     
 }
 
-function testScript(evt) {
+function recordSnippet(evt) {
     const parent = evt.target.parentElement.parentElement;
     const clipContainer = parent.querySelector(".clip-container");
     const startButton = parent.querySelector(".start");
