@@ -49,9 +49,10 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
 
    $text = $snippets_atts['text'];
    global $wpdb;
+   $table_name = get_table_name();
    $snippets = $wpdb->get_results(
       "
-      SELECT * FROM wp_snippets
+      SELECT * FROM $table_name
       where snippet='$text';
       "
    );
@@ -133,7 +134,7 @@ function upload_snippet_handler() {
    // grab the ID of the row just inserted
    $snippet = $wpdb->get_row(
       "
-      SELECT * FROM wp_snippets
+      SELECT * FROM $table_name
       where audio_attachment_id=$attachment_id;
       "
    );
@@ -154,13 +155,10 @@ function delete_snippet_handler() {
    global $wpdb;
    $snippet_id = $_POST['snippet_id'];
 
-
-
-   // TODO delete the attachment containing the recording
-   // TODO replace wp_snippets in all places with the dynamic table name
+   $table_name = get_table_name();
    $snippet = $wpdb->get_row(
       "
-      SELECT * FROM wp_snippets
+      SELECT * FROM $table_name
       where id=$snippet_id;
       "
    );
