@@ -39,12 +39,10 @@ function recordSnippet(evt) {
         let onSuccess = function(stream) {
             const mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.start();
-            console.log(mediaRecorder.state);
             console.log("Started recording");
 
             stopButton.onclick = function() {
                 mediaRecorder.stop();
-                console.log(mediaRecorder.state);
                 console.log("recorder stopped");
             }
 
@@ -56,7 +54,6 @@ function recordSnippet(evt) {
             }
 
             mediaRecorder.onstop = function(e) {
-                console.log("mediaRecorder.onStop");
                 const clipCard = document.createElement('div');
                 clipCard.className="flex";
 
@@ -67,9 +64,7 @@ function recordSnippet(evt) {
                 const audio = document.createElement('audio');
                 audio.setAttribute('controls', '');
                 audio.controls = true;
-                console.log(recordedChunks);
                 const blob = new Blob(recordedChunks, {'type' : 'audio/ogg; codecs=opus'});
-                console.log(blob);
                 audio.src = window.URL.createObjectURL(blob);
                 clipCard.append(audio);
                 
@@ -93,7 +88,6 @@ function recordSnippet(evt) {
                     processData: false,
                     contentType: false,
                     success: function(data) {
-                        console.log("callback",data);
                         // make the delete button
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = "x";
