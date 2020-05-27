@@ -163,3 +163,4 @@ function delete_snippet_handler() {
    wp_send_json($return);
 }
 add_action( 'wp_ajax_delete_snippet', 'delete_snippet_handler' );
+add_action( 'wp_ajax_nopriv_delete_snippet', 'delete_snippet_handler' );
