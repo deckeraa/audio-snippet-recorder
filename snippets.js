@@ -76,7 +76,7 @@ function recordSnippet(evt) {
                 var formData = new FormData();
                 formData.append('action',"upload_snippet");
                 formData.append("_ajax_nonce", my_ajax_obj.nonce);
-                formData.append("title","foo"); // TODO remove
+                //formData.append("title","foo"); // TODO remove
                 formData.append("post_id",my_ajax_obj.post_id);
                 formData.append("snippet",snippet);
                 

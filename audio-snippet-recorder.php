@@ -56,7 +56,7 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
 
     // override default attributes with user attributes
     $snippets_atts = shortcode_atts([
-        'text' => 'Text snippet goes here',
+        'text' => $content,
     ], $atts, $tag);
 
     // look up existing snippet recordings
@@ -210,7 +210,7 @@ function delete_snippet_handler() {
         wp_send_json($return);
     }
     else {
-        wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You can only delete your own snippets if you are an admin.'));
+        wp_send_json(array('Success' => 'false', 'error_message' => "Insufficent permissions. You can only delete other users' snippets if you are an admin."));
     }
 }
 add_action( 'wp_ajax_delete_snippet', 'delete_snippet_handler' );
