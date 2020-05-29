@@ -28,7 +28,7 @@ function deleteSnippet(evt,snippet_id) {
 }
 
 function recordSnippet(evt) {
-    const parent = evt.target.parentElement.parentElement;
+    const parent = evt.target.parentElement.parentElement.parentElement;
     const clipContainer = parent.querySelector(".clip-container");
     const startButton = parent.querySelector(".start");
     const stopButton = parent.querySelector(".stop");
@@ -90,8 +90,8 @@ function recordSnippet(evt) {
                     success: function(data) {
                         // make the delete button
                         const deleteButton = document.createElement('button');
-                        deleteButton.textContent = "x";
-                        deleteButton.className = "red b bg-white f3 ba br3 ma1 dim";
+                        deleteButton.textContent = 'x';
+                        deleteButton.className = "white b bg-red f3 ba br3 ma1 dim";
                         deleteButton.onclick = function(event) { deleteSnippet(event,data.snippet_id)};
                         clipCard.append(deleteButton);
                     }

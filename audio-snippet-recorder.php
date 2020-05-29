@@ -9,6 +9,11 @@
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
+add_action( 'wp_enqueue_scripts', 'enqueue_load_fa' );
+function enqueue_load_fa() {
+    wp_enqueue_style( 'load-fa', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' );
+}
+
 function get_table_name () {
     global $wpdb;
     return $wpdb->prefix . "snippets"; // typically returns wp_snippets
@@ -78,8 +83,9 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
     }
 
     if ( current_user_can("record_snippets") ) {
-        $o .= "<button class='start white bg-green bn pa2 ma1 f3 br3 dim' onClick='recordSnippet(event);'>Record snippet</button>";
-        $o .= '<button class="stop white bg-red bn pa2 ma1 f3 br3 dim dn">Stop Recording</button>';
+        $o .= '<button class="start white b bg-green f3 ba br3 ma1 dim" onClick="recordSnippet(event);"><i class="fa fa-microphone"></i>
+</button>';
+        $o .= '<button class="stop white b bg-red f3 ba br3 ma1 dim dn"><i class="fa fa-stop"></i></button>';
     }
     $o .= '</div>';
     $o .= '<div class="clip-container">';
@@ -88,7 +94,7 @@ function snippets_shortcode($atts = [], $content = null, $tag = '') {
         $o .= '<audio controls="" src="' . wp_get_attachment_url($snippet->audio_attachment_id) . '"></audio></audio>';
         $user = wp_get_current_user();
         if ( current_user_can("delete_others_snippets") || $user->id == $snippet->user_id ) {
-            $o .= '<button class="red b bg-white f3 ba br3 ma1 dim" onclick="deleteSnippet(event,' . $snippet->id . ');">x</button>';
+            $o .= '<button class="white b bg-red f3 ba br3 ma1 dim" onclick="deleteSnippet(event,' . $snippet->id . ');">x</button>';
         }
         $o .= '</div>';
     }
@@ -204,7 +210,7 @@ function delete_snippet_handler() {
         wp_send_json($return);
     }
     else {
-        wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You can only delete your own snippets unless you are admin.'));
+        wp_send_json(array('Success' => 'false', 'error_message' => 'Insufficent permissions. You can only delete your own snippets if you are an admin.'));
     }
 }
 add_action( 'wp_ajax_delete_snippet', 'delete_snippet_handler' );
